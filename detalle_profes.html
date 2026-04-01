@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Detalle Profes — Homenetmen 2026</title>
+<style>@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');</style>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+[data-theme="dark"]{
+  --bg:#0a0c10;--bg2:#11141b;--bg3:#181c27;--bg4:#1f2535;
+  --border:#252d3d;--text:#e8ecf4;--text2:#8892a8;--text3:#5a6478;
+  --accent:#e8c84a;--mc:#06b6d4;
+}
+[data-theme="light"]{
+  --bg:#f0f2f5;--bg2:#ffffff;--bg3:#f7f8fa;--bg4:#ebedf2;
+  --border:#dce0e8;--text:#1a1d26;--text2:#5a6070;--text3:#8890a0;
+  --accent:#b89000;--mc:#0891b2;
+}
+html{font-size:14px}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0}
+.header{background:var(--bg2);border-bottom:1px solid var(--border);padding:16px 28px;display:flex;align-items:center;justify-content:space-between}
+.header h1{font-size:17px;font-weight:700}
+.header h1 span{color:var(--text3);font-weight:400;margin-left:8px;font-size:12px}
+.container{max-width:960px;margin:0 auto;padding:28px 20px}
+tbody td{font-family:'DM Sans',sans-serif}
+tbody td.mono{font-family:'JetBrains Mono';font-size:11.5px;color:var(--text2)}
+tbody tr:hover{background:rgba(0,0,0,.02)}
+.theme-btn{width:36px;height:36px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);cursor:pointer;font-size:17px;transition:all .2s}
+</style>
+</head>
+<body>
+<div class="header">
+  <div style="display:flex;align-items:center;gap:14px">
+    <div style="width:38px;height:38px;background:linear-gradient(135deg,#e8c84a,#8a6c00);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:20px">🏫</div>
+    <h1>Detalle Profes <span>Homenetmen Buenos Aires · 2026</span></h1>
+  </div>
+  <button class="theme-btn" onclick="toggleTheme()" title="Cambiar tema">🌙</button>
+</div>
+
+<div class="container">
+  
+  <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:16px 20px;margin-bottom:20px">
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#92400e;margin-bottom:8px">📌 Notas</div>
+    <ul style="list-style:disc;padding-left:18px"><li style="padding:4px 0;font-size:13px;color:var(--text2)">Pendiente información de profes de tenis + German Cigarra como coordinacion</li></ul>
+  </div>
+  <div style="margin-bottom:20px">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <label style="font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Mes</label>
+      <select id="sel-mes-profes" onchange="renderProfes()" style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:7px 14px;font-size:14px;color:var(--text);cursor:pointer;min-width:160px">
+        <option value="Marzo">Marzo</option><option value="Abril">Abril</option>
+      </select>
+    </div>
+  </div>
+  <div id="profes-container"></div>
+</div>
+
+<!-- Modal detalle profe -->
+<div id="profeModal" style="display:none;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;background:rgba(0,0,0,0.45)" onclick="if(event.target===this)closeProfeModal()">
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;width:min(620px,95vw);max-height:80vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.25)">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border)">
+      <span id="profeModalTitle" style="font-weight:700;font-size:15px;color:var(--text)"></span>
+      <button onclick="closeProfeModal()" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--text3);line-height:1;padding:0 4px">×</button>
+    </div>
+    <div id="profeModalBody" style="overflow-y:auto;padding:16px 22px 22px"></div>
+  </div>
+</div>
+
+<script>
+const PROFES      = [{"nombre": "Matías Avakian", "deporte": "Futsal", "telefono": "", "cbu": "", "hs_por_mes": {"Marzo": {"semanales": 10.5, "mensuales": 42.0}, "Abril": {"semanales": 0.0, "mensuales": 0.0}}, "liq_por_mes": {"Marzo": {"total": 315000, "detalle": "Futsal/Ayudante: 42.0hs×$7,500=$315,000"}, "Abril": {"total": 0, "detalle": ""}}, "filas_det": {"Marzo": [{"dep": "Futsal", "dia": "Martes", "dur": 1.0, "cat": "2018/2019", "rol": "Ayudante"}, {"dep": "Futsal", "dia": "Martes", "dur": 1.5, "cat": "2016/2017", "rol": "Ayudante"}, {"dep": "Futsal", "dia": "Miércoles", "dur": 1.5, "cat": "8va, 7ma y 6ta", "rol": "Ayudante"}, {"dep": "Futsal", "dia": "Miércoles", "dur": 0, "cat": "General", "rol": "Micro"}, {"dep": "Futsal", "dia": "Viernes", "dur": 1.0, "cat": "2018/2019", "rol": "Ayudante"}, {"dep": "Futsal", "dia": "Viernes", "dur": 1.5, "cat": "2016/2017", "rol": "Ayudante"}, {"dep": "Futsal", "dia": "Domingo", "dur": 1.0, "cat": "2019", "rol": "Ayudante"}, {"dep": "Futsal", "dia": "Domingo", "dur": 1.0, "cat": "2018", "rol": "Ayudante"}, {"dep": "Futsal", "dia": "Domingo", "dur": 1.0, "cat": "2017", "rol": "Ayudante"}, {"dep": "Futsal", "dia": "Domingo", "dur": 1.0, "cat": "2016", "rol": "Ayudante"}], "Abril": []}, "hs_semanales": 0.0, "hs_mensuales": 0.0}, {"nombre": "Thiago Fernández", "deporte": "Futsal", "telefono": "", "cbu": "", "hs_por_mes": {"Marzo": {"semanales": 8.0, "mensuales": 32.0}, "Abril": {"semanales": 0.0, "mensuales": 0.0}}, "liq_por_mes": {"Marzo": {"total": 276000, "detalle": "Futsal/Profe: 24.0hs×$9,000=$216,000 | Futbol 7/Ayudante: 8.0hs×$7,500=$60,000"}, "Abril": {"total": 0, "detalle": ""}}, "filas_det": {"Marzo": [{"dep": "Futsal", "dia": "Martes", "dur": 1.5, "cat": "5ta y 4ta", "rol": "Profe"}, {"dep": "Futsal", "dia": "Miércoles", "dur": 1.5, "cat": "8va, 7ma y 6ta", "rol": "Profe"}, {"dep": "Futsal", "dia": "Jueves", "dur": 1.5, "cat": "5ta y 4ta", "rol": "Profe"}, {"dep": "Futsal", "dia": "Viernes", "dur": 1.5, "cat": "8va, 7ma y 6ta", "rol": "Profe"}, {"dep": "Futsal", "dia": "Viernes", "dur": 0, "cat": "General", "rol": "Micro"}, {"dep": "Futsal", "dia": "Sábado/Domingo", "dur": 0, "cat": "8va", "rol": "Profe"}, {"dep": "Futsal", "dia": "Sábado/Domingo", "dur": 0, "cat": "7ma", "rol": "Profe"}, {"dep": "Futsal", "dia": "Sábado/Domingo", "dur": 0, "cat": "6ta", "rol": "Profe"}, {"dep": "Futsal", "dia": "Sábado/Domingo", "dur": 0, "cat": "5ta", "rol": "Profe"}, {"dep": "Futsal", "dia": "Sábado/Domingo", "dur": 0, "cat": "4ta", "rol": "Profe"}, {"dep": "Futbol 7", "dia": "Sábado", "dur": 2.0, "cat": "11 a 13 años", "rol": "Ayudante"}], "Abril": []}, "hs_semanales": 0.0, "hs_mensuales": 0.0}, {"nombre": "Ariel Gutiérrez", "deporte": "Futsal", "telefono": "", "cbu": "", "hs_por_mes": {"Marzo": {"semanales": 7.0, "mensuales": 28.0}, "Abril": {"semanales": 0.0, "mensuales": 0.0}}, "liq_por_mes": {"Marzo": {"total": 600000, "detalle": "Fijo mensual: $600,000"}, "Abril": {"total": 0, "detalle": ""}}, "filas_det": {"Marzo": [{"dep": "Futsal", "dia": "Lunes", "dur": 2.0, "cat": "3era y 1era", "rol": "Ayudante"}, {"dep": "Futsal", "dia": "Martes", "dur": 1.5, "cat": "5ta y 4ta", "rol": "Profe"}, {"dep": "Futsal", "dia": "Jueves", "dur": 1.5, "cat": "5ta y 4ta", "rol": "Profe"}, {"dep": "Futsal", "dia": "Entre Viernes y Lunes", "dur": 0, "cat": "3era", "rol": "Ayudante"}, {"dep": "Futsal", "dia": "Entre Viernes y Lunes", "dur": 0, "cat": "1era", "rol": "Ayudante"}, {"dep": "Futsal", "dia": "Sábado/Domingo", "dur": 0, "cat": "5ta", "rol": "Profe"}, {"dep": "Futsal", "dia": "Sábado/Domingo", "dur": 0, "cat": "4ta", "rol": "Profe"}, {"dep": "Futbol 7", "dia": "Sábado", "dur": 2.0, "cat": "11 a 13 años", "rol": "Profe"}], "Abril": []}, "hs_semanales": 0.0, "hs_mensuales": 0.0}, {"nombre": "Germán Gallardo", "deporte": "Futsal", "telefono": "", "cbu": "", "hs_por_mes": {"Marzo": {"semanales": 0.0, "mensuales": 0.0}, "Abril": {"semanales": 0.0, "mensuales": 0.0}}, "liq_por_mes": {"Marzo": {"total": 500000, "detalle": "Delegado: $500,000 fijo"}, "Abril": {"total": 0, "detalle": ""}}, "filas_det": {"Marzo": [{"dep": "Futsal", "dia": "Semanal", "dur": 0, "cat": "General", "rol": "Delegado"}, {"dep": "Futsal", "dia": "Sábado/Domingo", "dur": 0, "cat": "General", "rol": "Delegado"}], "Abril": []}, "hs_semanales": 0.0, "hs_mensuales": 0.0}, {"nombre": "Aaron González", "deporte": "Futsal", "telefono": "", "cbu": "", "hs_por_mes": {"Marzo": {"semanales": 11.0, "mensuales": 44.0}, "Abril": {"semanales": 0.0, "mensuales": 0.0}}, "liq_por_mes": {"Marzo": {"total": 400000, "detalle": "Fijo mensual: $400,000"}, "Abril": {"total": 0, "detalle": ""}}, "filas_det": {"Marzo": [{"dep": "Futsal", "dia": "Martes", "dur": 1.0, "cat": "2018/2019", "rol": "Profe"}, {"dep": "Futsal", "dia": "Martes", "dur": 1.5, "cat": "2016/2017", "rol": "Profe"}, {"dep": "Futsal", "dia": "Viernes", "dur": 1.0, "cat": "2018/2019", "rol": "Profe"}, {"dep": "Futsal", "dia": "Viernes", "dur": 1.5, "cat": "2016/2017", "rol": "Profe"}, {"dep": "Futsal", "dia": "Domingo", "dur": 1.0, "cat": "2019", "rol": "Profe"}, {"dep": "Futsal", "dia": "Domingo", "dur": 1.0, "cat": "2018", "rol": "Profe"}, {"dep": "Futsal", "dia": "Domingo", "dur": 1.0, "cat": "2017", "rol": "Profe"}, {"dep": "Futsal", "dia": "Domingo", "dur": 1.0, "cat": "2016", "rol": "Profe"}, {"dep": "Futbol 7", "dia": "Sábado", "dur": 2.0, "cat": "11 a 13 años", "rol": "Profe"}], "Abril": []}, "hs_semanales": 0.0, "hs_mensuales": 0.0}, {"nombre": "Hernán Dobal", "deporte": "Futsal", "telefono": "", "cbu": "", "hs_por_mes": {"Marzo": {"semanales": 6.0, "mensuales": 24.0}, "Abril": {"semanales": 0.0, "mensuales": 0.0}}, "liq_por_mes": {"Marzo": {"total": 550000, "detalle": "Fijo mensual: $550,000"}, "Abril": {"total": 0, "detalle": ""}}, "filas_det": {"Marzo": [{"dep": "Futsal", "dia": "Lunes", "dur": 2.0, "cat": "3era y 1era", "rol": "Profe"}, {"dep": "Futsal", "dia": "Martes", "dur": 2.0, "cat": "3era y 1era", "rol": "Profe"}, {"dep": "Futsal", "dia": "Jueves", "dur": 2.0, "cat": "3era y 1era", "rol": "Profe"}, {"dep": "Futsal", "dia": "Entre Viernes y Lunes", "dur": 0, "cat": "3era", "rol": "Profe"}, {"dep": "Futsal", "dia": "Entre Viernes y Lunes", "dur": 0, "cat": "1era", "rol": "Ayudante"}], "Abril": []}, "hs_semanales": 0.0, "hs_mensuales": 0.0}, {"nombre": "Matías Zapata", "deporte": "Futsal / Fútbol", "telefono": "", "cbu": "", "hs_por_mes": {"Marzo": {"semanales": 4.0, "mensuales": 16.0}, "Abril": {"semanales": 0.0, "mensuales": 0.0}}, "liq_por_mes": {"Marzo": {"total": 144000, "detalle": "Futsal/Profe: 16.0hs×$9,000=$144,000"}, "Abril": {"total": 0, "detalle": ""}}, "filas_det": {"Marzo": [{"dep": "Futsal", "dia": "Martes", "dur": 2.0, "cat": "Fútbol Senior", "rol": "Profe"}, {"dep": "Futsal", "dia": "Sábado", "dur": 1.0, "cat": "Fútbol Femenino", "rol": "Profe"}, {"dep": "Futsal", "dia": "Sábado", "dur": 1.0, "cat": "Fútbol Senior", "rol": "Profe"}, {"dep": "Futsal", "dia": "Domingo", "dur": 0, "cat": "General", "rol": "Delegado"}], "Abril": []}, "hs_semanales": 0.0, "hs_mensuales": 0.0}, {"nombre": "Federico Bruno", "deporte": "Futsal", "telefono": "", "cbu": "", "hs_por_mes": {"Marzo": {"semanales": 4.0, "mensuales": 16.0}, "Abril": {"semanales": 0.0, "mensuales": 0.0}}, "liq_por_mes": {"Marzo": {"total": 270000, "detalle": "Fijo mensual: $270,000"}, "Abril": {"total": 0, "detalle": ""}}, "filas_det": {"Marzo": [{"dep": "Futsal", "dia": "Martes", "dur": 2.0, "cat": "3era y 1era", "rol": "Profe"}, {"dep": "Futsal", "dia": "Jueves", "dur": 2.0, "cat": "3era y 1era", "rol": "Profe"}, {"dep": "Futsal", "dia": "Entre Viernes y Lunes", "dur": 0, "cat": "3era", "rol": "Profe"}, {"dep": "Futsal", "dia": "Entre Viernes y Lunes", "dur": 0, "cat": "1era", "rol": "Profe"}], "Abril": []}, "hs_semanales": 0.0, "hs_mensuales": 0.0}, {"nombre": "Facundo Otero", "deporte": "Futsal", "telefono": "", "cbu": "", "hs_por_mes": {"Marzo": {"semanales": 2.0, "mensuales": 8.0}, "Abril": {"semanales": 0.0, "mensuales": 0.0}}, "liq_por_mes": {"Marzo": {"total": 67500, "detalle": "Futsal/Ayudante: 9.0hs×$7,500=$67,500"}, "Abril": {"total": 0, "detalle": ""}}, "filas_det": {"Marzo": [{"dep": "Futsal", "dia": "Jueves", "dur": 0.75, "cat": "5ta y 4ta", "rol": "Ayudante"}, {"dep": "Futsal", "dia": "Viernes", "dur": 1.5, "cat": "8va, 7ma y 6ta", "rol": "Ayudante"}, {"dep": "Futsal", "dia": "Viernes", "dur": 0, "cat": "General", "rol": "Micro"}, {"dep": "Futsal", "dia": "Sábado/Domingo", "dur": 0, "cat": "8va", "rol": "Ayudante"}, {"dep": "Futsal", "dia": "Sábado/Domingo", "dur": 0, "cat": "7ma", "rol": "Ayudante"}, {"dep": "Futsal", "dia": "Sábado/Domingo", "dur": 0, "cat": "6ta", "rol": "Ayudante"}], "Abril": []}, "hs_semanales": 0.0, "hs_mensuales": 0.0}, {"nombre": "Jorge Massini", "deporte": "Futsal", "telefono": "", "cbu": "", "hs_por_mes": {"Marzo": {"semanales": 0.0, "mensuales": 0.0}, "Abril": {"semanales": 0.0, "mensuales": 0.0}}, "liq_por_mes": {"Marzo": {"total": 0, "detalle": ""}, "Abril": {"total": 0, "detalle": ""}}, "filas_det": {"Marzo": [{"dep": "Futsal", "dia": "Martes", "dur": 0, "cat": "General", "rol": "Micro"}, {"dep": "Futsal", "dia": "Jueves", "dur": 0, "cat": "General", "rol": "Micro"}], "Abril": []}, "hs_semanales": 0.0, "hs_mensuales": 0.0}, {"nombre": "Esteban González", "deporte": "Futsal", "telefono": "", "cbu": "", "hs_por_mes": {"Marzo": {"semanales": 4.0, "mensuales": 16.0}, "Abril": {"semanales": 0.0, "mensuales": 0.0}}, "liq_por_mes": {"Marzo": {"total": 144000, "detalle": "Futsal/Profe: 16.0hs×$9,000=$144,000"}, "Abril": {"total": 0, "detalle": ""}}, "filas_det": {"Marzo": [{"dep": "Futsal", "dia": "Lunes", "dur": 2.0, "cat": "3era y 1era", "rol": "Profe"}, {"dep": "Futsal", "dia": "Jueves", "dur": 2.0, "cat": "3era y 1era", "rol": "Profe"}, {"dep": "Futsal", "dia": "Entre Viernes y Lunes", "dur": 0, "cat": "1era", "rol": "Profe"}], "Abril": []}, "hs_semanales": 0.0, "hs_mensuales": 0.0}, {"nombre": "Lucas Tapia", "deporte": "Futsal", "telefono": "", "cbu": "", "hs_por_mes": {"Marzo": {"semanales": 5.0, "mensuales": 20.0}, "Abril": {"semanales": 0.0, "mensuales": 0.0}}, "liq_por_mes": {"Marzo": {"total": 180000, "detalle": "Futsal/Profe: 20.0hs×$9,000=$180,000"}, "Abril": {"total": 0, "detalle": ""}}, "filas_det": {"Marzo": [{"dep": "Futsal", "dia": "Martes", "dur": 1.5, "cat": "5ta y 4ta", "rol": "Profe"}, {"dep": "Futsal", "dia": "Martes", "dur": 2.0, "cat": "3era y 1era", "rol": "Profe"}, {"dep": "Futsal", "dia": "Miércoles", "dur": 1.5, "cat": "8va, 7ma y 6ta", "rol": "Profe"}], "Abril": []}, "hs_semanales": 0.0, "hs_mensuales": 0.0}, {"nombre": "Walter Fernández", "deporte": "Tenis de Mesa", "telefono": "", "cbu": "", "hs_por_mes": {"Marzo": {"semanales": 2.0, "mensuales": 8.0}, "Abril": {"semanales": 0.0, "mensuales": 0.0}}, "liq_por_mes": {"Marzo": {"total": 72000, "detalle": "Tenis de Mesa/Profe: 8.0hs×$9,000=$72,000"}, "Abril": {"total": 0, "detalle": ""}}, "filas_det": {"Marzo": [{"dep": "Tenis de Mesa", "dia": "Sábado", "dur": 1.0, "cat": "Adultos", "rol": "Profe"}, {"dep": "Tenis de Mesa", "dia": "Sábado", "dur": 1.0, "cat": "Adolescentes", "rol": "Profe"}], "Abril": []}, "hs_semanales": 0.0, "hs_mensuales": 0.0}, {"nombre": "Gustavo Martínez", "deporte": "Handball", "telefono": "", "cbu": "", "hs_por_mes": {"Marzo": {"semanales": 4.0, "mensuales": 16.0}, "Abril": {"semanales": 0.0, "mensuales": 0.0}}, "liq_por_mes": {"Marzo": {"total": 120000, "detalle": "Handball/Ayudante: 16.0hs×$7,500=$120,000"}, "Abril": {"total": 0, "detalle": ""}}, "filas_det": {"Marzo": [{"dep": "Handball", "dia": "Martes", "dur": 2.0, "cat": "Juniors y mayores", "rol": "Ayudante"}, {"dep": "Handball", "dia": "Jueves", "dur": 2.0, "cat": "Juveniles, juniors y mayores", "rol": "Ayudante"}, {"dep": "Handball", "dia": "Sábado", "dur": 0, "cat": "Mayores", "rol": "Ayudante"}], "Abril": []}, "hs_semanales": 0.0, "hs_mensuales": 0.0}, {"nombre": "Raffi Kodjaian", "deporte": "Handball", "telefono": "", "cbu": "", "hs_por_mes": {"Marzo": {"semanales": 4.0, "mensuales": 16.0}, "Abril": {"semanales": 0.0, "mensuales": 0.0}}, "liq_por_mes": {"Marzo": {"total": 144000, "detalle": "Handball/Profe: 16.0hs×$9,000=$144,000"}, "Abril": {"total": 0, "detalle": ""}}, "filas_det": {"Marzo": [{"dep": "Handball", "dia": "Martes", "dur": 2.0, "cat": "Juniors y mayores", "rol": "Profe"}, {"dep": "Handball", "dia": "Jueves", "dur": 2.0, "cat": "Juveniles, juniors y mayores", "rol": "Profe"}, {"dep": "Handball", "dia": "Sábado", "dur": 0, "cat": "Mayores", "rol": "Profe"}], "Abril": []}, "hs_semanales": 0.0, "hs_mensuales": 0.0}, {"nombre": "Bárbara Gonzalía", "deporte": "Handball / Coordinación", "telefono": "", "cbu": "", "hs_por_mes": {"Marzo": {"semanales": 7.0, "mensuales": 28.0}, "Abril": {"semanales": 0.0, "mensuales": 0.0}}, "liq_por_mes": {"Marzo": {"total": 1611600, "detalle": "Coordinación: $1,359,600 fijo | Handball/Profe: 28.0hs×$9,000=$252,000"}, "Abril": {"total": 0, "detalle": ""}}, "filas_det": {"Marzo": [{"dep": "Handball", "dia": "Lunes", "dur": 2.5, "cat": "Infantiles y menores", "rol": "Profe"}, {"dep": "Handball", "dia": "Miércoles", "dur": 1.5, "cat": "Menores", "rol": "Profe"}, {"dep": "Handball", "dia": "Domingo", "dur": 1.5, "cat": "Infantiles", "rol": "Profe"}, {"dep": "Handball", "dia": "Domingo", "dur": 1.5, "cat": "Menores", "rol": "Profe"}, {"dep": "Coordinación", "dia": "Semanal", "dur": 0, "cat": "", "rol": "Coordinación"}], "Abril": []}, "hs_semanales": 0.0, "hs_mensuales": 0.0}, {"nombre": "Jorgelina Balerion", "deporte": "Handball", "telefono": "", "cbu": "", "hs_por_mes": {"Marzo": {"semanales": 12.5, "mensuales": 50.0}, "Abril": {"semanales": 0.0, "mensuales": 0.0}}, "liq_por_mes": {"Marzo": {"total": 441000, "detalle": "Handball/Profe: 16.0hs×$9,000=$144,000 | Escuelas deportivas/Profe: 28.0hs×$9,000=$252,000 | Handball/Ayudante: 6.0hs×$7,500=$45,000"}, "Abril": {"total": 0, "detalle": ""}}, "filas_det": {"Marzo": [{"dep": "Handball", "dia": "Lunes", "dur": 1.5, "cat": "Minis", "rol": "Profe"}, {"dep": "Handball", "dia": "Miércoles", "dur": 2.5, "cat": "Minis e infantiles", "rol": "Profe"}, {"dep": "Escuelas deportivas", "dia": "Sábado", "dur": 3.5, "cat": "5 a 12 años", "rol": "Profe"}, {"dep": "Handball", "dia": "Lunes", "dur": 1.5, "cat": "Infantiles y menores", "rol": "Ayudante"}, {"dep": "Escuelas deportivas", "dia": "Sábado", "dur": 3.5, "cat": "5 a 12 años", "rol": "Profe"}], "Abril": []}, "hs_semanales": 0.0, "hs_mensuales": 0.0}, {"nombre": "Ailen García", "deporte": "Handball", "telefono": "", "cbu": "", "hs_por_mes": {"Marzo": {"semanales": 10.5, "mensuales": 42.0}, "Abril": {"semanales": 0.0, "mensuales": 0.0}}, "liq_por_mes": {"Marzo": {"total": 378000, "detalle": "Handball/Profe: 42.0hs×$9,000=$378,000"}, "Abril": {"total": 0, "detalle": ""}}, "filas_det": {"Marzo": [{"dep": "Handball", "dia": "Lunes", "dur": 2.5, "cat": "Cadetas, juveniles y juniors", "rol": "Profe"}, {"dep": "Handball", "dia": "Miércoles", "dur": 1.5, "cat": "Cadetas y juveniles", "rol": "Profe"}, {"dep": "Micro", "dia": "Miércoles", "dur": 0, "cat": "General", "rol": "Micro"}, {"dep": "Handball", "dia": "Jueves", "dur": 2.0, "cat": "Juveniles y juniors", "rol": "Profe"}, {"dep": "Handball", "dia": "Domingo", "dur": 1.5, "cat": "Cadetas", "rol": "Profe"}, {"dep": "Handball", "dia": "Domingo", "dur": 1.5, "cat": "Juveniles", "rol": "Profe"}, {"dep": "Handball", "dia": "Domingo", "dur": 1.5, "cat": "Juniors", "rol": "Profe"}], "Abril": []}, "hs_semanales": 0.0, "hs_mensuales": 0.0}, {"nombre": "Sofía Takessian", "deporte": "Handball", "telefono": "", "cbu": "", "hs_por_mes": {"Marzo": {"semanales": 7.0, "mensuales": 28.0}, "Abril": {"semanales": 0.0, "mensuales": 0.0}}, "liq_por_mes": {"Marzo": {"total": 210000, "detalle": "Handball/Ayudante: 28.0hs×$7,500=$210,000"}, "Abril": {"total": 0, "detalle": ""}}, "filas_det": {"Marzo": [{"dep": "Handball", "dia": "Lunes", "dur": 2.5, "cat": "Cadetas, juveniles y juniors", "rol": "Ayudante"}, {"dep": "Handball", "dia": "Domingo", "dur": 1.5, "cat": "Cadetas", "rol": "Ayudante"}, {"dep": "Handball", "dia": "Domingo", "dur": 1.5, "cat": "Juveniles", "rol": "Ayudante"}, {"dep": "Handball", "dia": "Domingo", "dur": 1.5, "cat": "Juniors", "rol": "Ayudante"}, {"dep": "Handball", "dia": "Domingo", "dur": 0, "cat": "General", "rol": "Delegado"}], "Abril": []}, "hs_semanales": 0.0, "hs_mensuales": 0.0}, {"nombre": "Irina Fornes", "deporte": "Handball", "telefono": "", "cbu": "", "hs_por_mes": {"Marzo": {"semanales": 5.5, "mensuales": 22.0}, "Abril": {"semanales": 0.0, "mensuales": 0.0}}, "liq_por_mes": {"Marzo": {"total": 165000, "detalle": "Handball/Ayudante: 22.0hs×$7,500=$165,000"}, "Abril": {"total": 0, "detalle": ""}}, "filas_det": {"Marzo": [{"dep": "Handball", "dia": "Lunes", "dur": 2.5, "cat": "Infantiles y menores", "rol": "Ayudante"}, {"dep": "Handball", "dia": "Domingo", "dur": 1.5, "cat": "Infantiles", "rol": "Ayudante"}, {"dep": "Handball", "dia": "Domingo", "dur": 1.5, "cat": "Menores", "rol": "Ayudante"}], "Abril": []}, "hs_semanales": 0.0, "hs_mensuales": 0.0}, {"nombre": "Fernando García", "deporte": "Handball", "telefono": "", "cbu": "", "hs_por_mes": {"Marzo": {"semanales": 1.5, "mensuales": 6.0}, "Abril": {"semanales": 0.0, "mensuales": 0.0}}, "liq_por_mes": {"Marzo": {"total": 54000, "detalle": "Handball/Profe: 6.0hs×$9,000=$54,000"}, "Abril": {"total": 0, "detalle": ""}}, "filas_det": {"Marzo": [{"dep": "Handball", "dia": "Lunes", "dur": 1.5, "cat": "General", "rol": "Profe"}], "Abril": []}, "hs_semanales": 0.0, "hs_mensuales": 0.0}, {"nombre": "Micaela García", "deporte": "Handball / Patín", "telefono": "", "cbu": "", "hs_por_mes": {"Marzo": {"semanales": 9.5, "mensuales": 38.0}, "Abril": {"semanales": 0.0, "mensuales": 0.0}}, "liq_por_mes": {"Marzo": {"total": 324000, "detalle": "Handball/Ayudante: 12.0hs×$7,500=$90,000 | Patín/Profe: 12.0hs×$9,000=$108,000 | Escuelas deportivas/Profe: 14.0hs×$9,000=$126,000"}, "Abril": {"total": 0, "detalle": ""}}, "filas_det": {"Marzo": [{"dep": "Handball", "dia": "Lunes", "dur": 1.5, "cat": "Cadetas y juveniles", "rol": "Ayudante"}, {"dep": "Handball", "dia": "Miércoles", "dur": 1.5, "cat": "Menores, cadetas y juveniles", "rol": "Ayudante"}, {"dep": "Patín", "dia": "Martes", "dur": 1.5, "cat": "Adolescentes", "rol": "Profe"}, {"dep": "Patín", "dia": "Sábado", "dur": 1.5, "cat": "Adolescentes", "rol": "Profe"}, {"dep": "Escuelas deportivas", "dia": "Sábado", "dur": 3.5, "cat": "5 a 12 años", "rol": "Profe"}], "Abril": []}, "hs_semanales": 0.0, "hs_mensuales": 0.0}, {"nombre": "Candela Obrador", "deporte": "Patín", "telefono": "", "cbu": "", "hs_por_mes": {"Marzo": {"semanales": 6.5, "mensuales": 26.0}, "Abril": {"semanales": 0.0, "mensuales": 0.0}}, "liq_por_mes": {"Marzo": {"total": 234000, "detalle": "Patín/Profe: 12.0hs×$9,000=$108,000 | Escuelas deportivas/Profe: 14.0hs×$9,000=$126,000"}, "Abril": {"total": 0, "detalle": ""}}, "filas_det": {"Marzo": [{"dep": "Patín", "dia": "Martes", "dur": 1.5, "cat": "Adolescentes", "rol": "Profe"}, {"dep": "Patín", "dia": "Sábado", "dur": 1.5, "cat": "Adolescentes", "rol": "Profe"}, {"dep": "Escuelas deportivas", "dia": "Sábado", "dur": 3.5, "cat": "5 a 12 años", "rol": "Profe"}], "Abril": []}, "hs_semanales": 0.0, "hs_mensuales": 0.0}, {"nombre": "Lucía Castellano", "deporte": "Gimnasia", "telefono": "", "cbu": "", "hs_por_mes": {"Marzo": {"semanales": 1.5, "mensuales": 6.0}, "Abril": {"semanales": 0.0, "mensuales": 0.0}}, "liq_por_mes": {"Marzo": {"total": 54000, "detalle": "Gimnasia/Profe: 6.0hs×$9,000=$54,000"}, "Abril": {"total": 0, "detalle": ""}}, "filas_det": {"Marzo": [{"dep": "Gimnasia", "dia": "Sábado", "dur": 1.5, "cat": "Libre", "rol": "Profe"}], "Abril": []}, "hs_semanales": 0.0, "hs_mensuales": 0.0}, {"nombre": "Cristian Mallo", "deporte": "Voley", "telefono": "", "cbu": "", "hs_por_mes": {"Marzo": {"semanales": 17.5, "mensuales": 70.0}, "Abril": {"semanales": 0.0, "mensuales": 0.0}}, "liq_por_mes": {"Marzo": {"total": 630000, "detalle": "Voley/Profe: 42.0hs×$9,000=$378,000 | Escuelas deportivas/Profe: 28.0hs×$9,000=$252,000"}, "Abril": {"total": 0, "detalle": ""}}, "filas_det": {"Marzo": [{"dep": "Voley", "dia": "Martes", "dur": 2.0, "cat": "Mayores", "rol": "Profe"}, {"dep": "Voley", "dia": "Jueves", "dur": 2.0, "cat": "Mayores", "rol": "Profe"}, {"dep": "Voley", "dia": "Domingo", "dur": 0, "cat": "Mayores", "rol": "Profe"}, {"dep": "Voley", "dia": "Jueves", "dur": 1.5, "cat": "Minis", "rol": "Profe"}, {"dep": "Voley", "dia": "Jueves", "dur": 1.5, "cat": "Adolescentes", "rol": "Profe"}, {"dep": "Voley", "dia": "Jueves", "dur": 1.5, "cat": "Adolescentes", "rol": "Profe"}, {"dep": "Voley", "dia": "Sábado", "dur": 1.0, "cat": "Adolescentes", "rol": "Profe"}, {"dep": "Voley", "dia": "Sábado", "dur": 1.0, "cat": "Adolescentes", "rol": "Profe"}, {"dep": "Escuelas deportivas", "dia": "Sábado", "dur": 3.5, "cat": "5 a 12 años", "rol": "Profe"}, {"dep": "Escuelas deportivas", "dia": "Sábado", "dur": 3.5, "cat": "5 a 12 años", "rol": "Profe"}], "Abril": []}, "hs_semanales": 0.0, "hs_mensuales": 0.0}, {"nombre": "Joaquin Perez", "deporte": "Voley", "telefono": "", "cbu": "", "hs_por_mes": {"Marzo": {"semanales": 18.5, "mensuales": 74.0}, "Abril": {"semanales": 7.5, "mensuales": 30.0}}, "liq_por_mes": {"Marzo": {"total": 350000, "detalle": "Fijo mensual: $350,000"}, "Abril": {"total": 0, "detalle": ""}}, "filas_det": {"Marzo": [{"dep": "Voley", "dia": "Jueves", "dur": 1.5, "cat": "Minis", "rol": "Profe"}, {"dep": "Voley", "dia": "Jueves", "dur": 1.5, "cat": "Adolescentes", "rol": "Profe"}, {"dep": "Voley", "dia": "Jueves", "dur": 1.5, "cat": "Minis", "rol": "Profe"}, {"dep": "Voley", "dia": "Jueves", "dur": 1.5, "cat": "Adolescentes", "rol": "Profe"}, {"dep": "Voley", "dia": "Sábado", "dur": 1.0, "cat": "Adolescentes", "rol": "Profe"}, {"dep": "Voley", "dia": "Sábado", "dur": 1.0, "cat": "Adolescentes", "rol": "Profe"}, {"dep": "Escuelas deportivas", "dia": "Sábado", "dur": 3.5, "cat": "5 a 12 años", "rol": "Profe"}, {"dep": "Escuelas deportivas", "dia": "Domingo", "dur": 3.5, "cat": "5 a 12 años", "rol": "Profe"}, {"dep": "Escuelas deportivas", "dia": "Sábado", "dur": 3.5, "cat": "5 a 12 años", "rol": "Profe"}], "Abril": [{"dep": "Voley", "dia": "Jueves", "dur": 1.5, "cat": "Minis", "rol": "Profe"}, {"dep": "Voley", "dia": "Jueves", "dur": 1.5, "cat": "Adolescentes", "rol": "Profe"}, {"dep": "Voley", "dia": "Sábado", "dur": 1.0, "cat": "Adolescentes", "rol": "Profe"}, {"dep": "Escuelas deportivas", "dia": "Sábado", "dur": 3.5, "cat": "5 a 12 años", "rol": "Profe"}]}, "hs_semanales": 7.5, "hs_mensuales": 30.0}, {"nombre": "Santiago Hernández", "deporte": "Iniciación Deportiva", "telefono": "", "cbu": "", "hs_por_mes": {"Marzo": {"semanales": 7.0, "mensuales": 28.0}, "Abril": {"semanales": 0.0, "mensuales": 0.0}}, "liq_por_mes": {"Marzo": {"total": 252000, "detalle": "Iniciación Deportiva/Profe: 28.0hs×$9,000=$252,000"}, "Abril": {"total": 0, "detalle": ""}}, "filas_det": {"Marzo": [{"dep": "Iniciación Deportiva", "dia": "Sábado", "dur": 3.5, "cat": "5 a 12 años", "rol": "Profe"}, {"dep": "Iniciación Deportiva", "dia": "Domingo", "dur": 3.5, "cat": "5 a 12 años", "rol": "Profe"}], "Abril": []}, "hs_semanales": 0.0, "hs_mensuales": 0.0}, {"nombre": "Mariano Majian", "deporte": "Coordinación", "telefono": "", "cbu": "", "hs_por_mes": {"Marzo": {"semanales": 0.0, "mensuales": 0.0}, "Abril": {"semanales": 0.0, "mensuales": 0.0}}, "liq_por_mes": {"Marzo": {"total": 0, "detalle": "Fijo mensual: $0"}, "Abril": {"total": 0, "detalle": ""}}, "filas_det": {"Marzo": [], "Abril": []}, "hs_semanales": 0.0, "hs_mensuales": 0.0}, {"nombre": "Aris Belian", "deporte": "Coordinación", "telefono": "", "cbu": "", "hs_por_mes": {"Marzo": {"semanales": 0.0, "mensuales": 0.0}, "Abril": {"semanales": 0.0, "mensuales": 0.0}}, "liq_por_mes": {"Marzo": {"total": 1600000, "detalle": "Fijo mensual: $1,600,000"}, "Abril": {"total": 0, "detalle": ""}}, "filas_det": {"Marzo": [], "Abril": []}, "hs_semanales": 0.0, "hs_mensuales": 0.0}];
+const MESES       = ["Marzo", "Abril"];
+const NOTAS       = ["Pendiente información de profes de tenis + German Cigarra como coordinacion"];
+
+function toggleTheme() {
+  const t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', t);
+}
+
+function renderProfes() {
+  const container = document.getElementById('profes-container');
+  if (!container) return;
+  if (!PROFES.length || !MESES.length) {
+    container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3)"><div style="font-size:32px;margin-bottom:12px">👨‍🏫</div><div style="font-size:14px">No hay profes cargados.</div></div>';
+    return;
+  }
+  const sel = document.getElementById('sel-mes-profes');
+  const mes = sel ? sel.value : (MESES[MESES.length-1] || '');
+  const th  = s => `<th style="padding:8px 12px;font-size:11px;color:var(--text3);font-weight:600;text-align:left;border-bottom:2px solid var(--border)">${s}</th>`;
+  const thr = s => `<th style="padding:8px 12px;font-size:11px;color:var(--text3);font-weight:600;text-align:right;border-bottom:2px solid var(--border)">${s}</th>`;
+  const fmtPeso = n => n ? '$ ' + n.toLocaleString('es-AR') : '—';
+  const rows = PROFES.map((p, i) => {
+    const hs      = (p.hs_por_mes  || {})[mes] || {semanales: 0, mensuales: 0};
+    const liq     = (p.liq_por_mes || {})[mes] || {total: 0};
+    const telHtml = p.telefono ? `<span style="font-family:'JetBrains Mono';font-size:11.5px">${p.telefono}</span>` : '<span style="color:var(--text3)">—</span>';
+    const cbuHtml = p.cbu ? `<span style="font-family:'JetBrains Mono';font-size:11px">${p.cbu}</span>` : '<span style="color:var(--text3)">—</span>';
+    const depBadge = p.deporte ? `<span style="background:#e0f2fe;color:#0369a1;border-radius:10px;padding:2px 8px;font-size:10px;font-weight:700">${p.deporte}</span>` : '—';
+    const hsS   = hs.semanales ? hs.semanales.toFixed(1) + ' hs' : '—';
+    const hsM   = hs.mensuales ? hs.mensuales.toFixed(1) + ' hs' : '—';
+    const sueldo = liq.total   ? fmtPeso(liq.total) : '—';
+    const td = 'padding:8px 12px;border-bottom:1px solid var(--border)';
+    return `<tr>
+      <td style="${td};color:var(--text3);font-size:12px">${i+1}</td>
+      <td style="${td}"><span onclick="openProfeModal('${p.nombre.replace(/'/g,"\'")}')" style="cursor:pointer;font-weight:500;border-bottom:1px dotted var(--accent);color:var(--text)">${p.nombre}</span></td>
+      <td style="${td}">${depBadge}</td>
+      <td style="${td}">${telHtml}</td>
+      <td style="${td}">${cbuHtml}</td>
+      <td style="${td};text-align:center;font-weight:600">${hsS}</td>
+      <td style="${td};text-align:center;color:var(--text3)">${hsM}</td>
+      <td style="${td};text-align:right;font-weight:700;color:var(--mc)">${sueldo}</td>
+    </tr>`;
+  }).join('');
+  container.innerHTML = `
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden">
+    <table style="width:100%;border-collapse:collapse">
+      <thead><tr style="background:var(--bg3)">
+        ${th('#')} ${th('Nombre y Apellido')} ${th('Deporte')} ${th('Teléfono')} ${th('CBU')}
+        ${th('Hs. Semanales')} ${th('Hs. Mensuales')} ${thr('Sueldo mensual')}
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>`;
+}
+
+function openProfeModal(nombre) {
+  const mes = document.getElementById('sel-mes-profes')?.value || '';
+  const p   = PROFES.find(x => x.nombre === nombre);
+  if (!p) return;
+  const filas = (p.filas_det || {})[mes] || [];
+  document.getElementById('profeModalTitle').textContent = nombre;
+  const th = s => `<th style="padding:6px 10px;font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;text-align:left">${s}</th>`;
+  let rows = '';
+  filas.forEach(f => {
+    const dur = f.dur ? f.dur.toFixed(1) + ' hs.' : '—';
+    rows += `<tr style="border-bottom:1px solid var(--border)">
+      <td style="padding:7px 10px">${f.dep || '—'}</td>
+      <td style="padding:7px 10px">${f.dia || '—'}</td>
+      <td style="padding:7px 10px;text-align:right;font-weight:600">${dur}</td>
+      <td style="padding:7px 10px;color:var(--text2)">${f.cat || '—'}</td>
+      <td style="padding:7px 10px">${f.rol || '—'}</td>
+    </tr>`;
+  });
+  const total = filas.reduce((s, f) => s + (f.dur || 0), 0);
+  document.getElementById('profeModalBody').innerHTML = filas.length === 0
+    ? '<p style="color:var(--text3);text-align:center;padding:24px">Sin detalle disponible para este mes</p>'
+    : `<table style="width:100%;border-collapse:collapse;font-size:13px">
+        <thead style="position:sticky;top:0;background:var(--bg2);z-index:1">
+          <tr style="border-bottom:2px solid var(--border)">${th('Deporte')}${th('Día')}${th('Duración')}${th('Categoría')}${th('Rol')}</tr>
+        </thead>
+        <tbody>${rows}</tbody>
+        <tfoot>
+          <tr style="border-top:2px solid var(--border);font-weight:700">
+            <td colspan="2" style="padding:8px 10px;color:var(--text3)">TOTAL</td>
+            <td style="padding:8px 10px;text-align:right">${total.toFixed(1)} hs.</td>
+            <td colspan="2"></td>
+          </tr>
+        </tfoot>
+      </table>`;
+  document.getElementById('profeModal').style.display = 'flex';
+}
+
+function closeProfeModal() {
+  document.getElementById('profeModal').style.display = 'none';
+}
+
+window.addEventListener('DOMContentLoaded', renderProfes);
+</script>
+</body>
+</html>
